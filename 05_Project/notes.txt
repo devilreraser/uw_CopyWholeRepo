@@ -1,0 +1,5 @@
+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
+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
+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
+
+repo_clone.bat https://github.com/devilreraser/fw_nRF_SPI_BLE.git https://github.com/devilreraser/fw_nRF_SPI_BLE_clone.git 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 ..\..
