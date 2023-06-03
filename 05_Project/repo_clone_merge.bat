@@ -70,11 +70,10 @@ if exist "%repo_dir%\%source_repo_name%" (
     git clone --recursive "%source_repo%" "%repo_dir%\%source_repo_name%"
 
     :: Change to the source repository directory
-    cd "%source_repo_name%"
+    cd "%repo_dir%\%source_repo_name%"
 )
 
 :: Check if the destination repository is a local path or a GitHub URL
-echo Testing github or not
 echo %destination_repo% | findstr /C:"https://github.com/" >nul
 if %errorlevel%==0 (
     :: Destination repository is on GitHub
@@ -85,18 +84,12 @@ if %errorlevel%==0 (
 
     :: Push the repository to the destination remote
     echo.
-    echo Pushing repository to destination remote...
-    
-    :: Specify the desired name for the remote folder
-    set "remote_folder_name=your_remote_folder_name"
-
-    :: Add the remote folder to the Git repository
-    git remote add %remote_folder_name% "%destination_repo%"
-    git push --all %remote_folder_name%
+    echo Pushing repository to destination remote %destination_repo%
+    git remote add github "%%"
+    git push --all github
 ) else (
     :: Destination repository is a local path
     :: Create the destination repository directory
-    echo.
     echo Creating destination repository at: %destination_repo%
     mkdir "%destination_repo%"
 
@@ -104,18 +97,44 @@ if %errorlevel%==0 (
     cd "%destination_repo%"
     git init
     echo Created empty Git repository.
+	
+	:: Change to the source repository directory
+    cd "%repo_dir%\%source_repo_name%"
+	
+	:: Push the source repository to the destination repository
+	echo.
+	echo Pushing repository to destination remote %destination_repo%
+	git remote add folder "%destination_repo:\=/%"
+	git push --all folder
 
-    :: Push the source repository to the destination repository
-    echo.
-    echo Pushing repository to destination...
-    git remote add folder "%source_repo%"
-    git push --all folder
 )
 
 :: Update the submodules
 echo.
 echo Updating submodules...
 git submodule update --init --recursive
+
+:: Clone and push submodules recursively
+for /f "delims=" %%s in ('git submodule status --recursive') do (
+    for /f "tokens=1,2" %%m in ("%%s") do (
+        set "submodule_path=%%m"
+        set "submodule_name=%%n"
+        
+        :: Clone the submodule repository to the destination remote path
+        echo.
+        echo Cloning submodule repository: %destination_repo%\%submodule_name%
+        git clone --recursive "%submodule_path%" "%destination_repo%\%submodule_name%"
+        
+        :: Change to the cloned submodule repository directory
+        cd "%destination_repo%\%submodule_name%"
+        
+        :: Push the cloned submodule repository to the destination remote
+        echo.
+        echo Pushing submodule repository to destination remote %destination_repo%
+        git remote add submodule_folder "%destination_repo:\=/%/%submodule_name%"
+        git push --all submodule_folder
+    )
+)
 
 echo.
 echo Repository and submodules cloned and pushed to the destination remote successfully!
