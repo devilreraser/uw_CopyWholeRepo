@@ -1,5 +1,13 @@
 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
 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
 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
+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
+
 
 repo_clone.bat https://github.com/devilreraser/fw_nRF_SPI_BLE.git https://github.com/devilreraser/fw_nRF_SPI_BLE_clone.git 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 ..\..
+repo_clone.bat https://github.com/devilreraser/fw_LIB_CSMON.git https://github.com/devilreraser/fw_LIB_CSMON_clone.git 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 ..\..
+
+
+repo_clone.bat https://github.com/devilreraser/fw_nRF_SPI_BLE.git https://github.com/devilreraser/fw_nRF_SPI_BLE_clone.git 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 ..\..
+repo_clone.bat https://github.com/devilreraser/fw_LIB_CSMON.git c:/repo_local/fw_LIB_CSMON.git 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 ..\..
+repo_clone.bat https://github.com/devilreraser/fw_nRF_SPI_BLE.git c:\repo_local\fw_nRF_SPI_BLE.git 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 ..\..

@@ -6,12 +6,6 @@ setlocal
 :: repo_clone.bat https://github.com/your-username/source-repo.git https://github.com/your-username/destination-repo.git your_github_token temp_directory
 :: ex.:
 :: repo_clone.bat https://github.com/devilreraser/fw_nRF_SPI_BLE.git https://github.com/devilreraser/fw_nRF_SPI_BLE_clone.git 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 ..\..
-::
-:: Replace "https://github.com/your-username/source-repo.git" with the actual URL of the source repository.
-:: Replace "https://github.com/your-username/destination-repo.git" with the actual URL of the destination repository.
-:: Replace "your_github_token" with your actual GitHub personal access token, e.g., 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.
-:: Replace "temp_directory" with the relative path where the destination directory should be created.
-:: If any of the parameters are not provided as command-line arguments, you will be prompted to enter them interactively.
 
 :: Check if source repository URL is provided as a command-line argument
 if "%~1"=="" (
@@ -20,9 +14,9 @@ if "%~1"=="" (
     set "source_repo=%~1"
 )
 
-:: Check if destination repository URL is provided as a command-line argument
+:: Check if destination repository URL or local path is provided as a command-line argument
 if "%~2"=="" (
-    set /p destination_repo=Enter the destination repository URL:
+    set /p destination_repo=Enter the destination repository URL or local path:
 ) else (
     set "destination_repo=%~2"
 )
@@ -53,7 +47,7 @@ cd /d "%repo_dir%"
 :: Get the repository name from the source URL
 for %%i in ("%source_repo%") do set "source_repo_name=%%~ni"
 
-:: Get the repository name from the destination URL
+:: Get the repository name from the destination URL or local path
 for %%i in ("%destination_repo%") do set "destination_repo_name=%%~ni"
 
 :: Check if the source repository is already cloned
@@ -76,19 +70,44 @@ if exist "%repo_dir%\%source_repo_name%" (
     git clone --recursive "%source_repo%" "%repo_dir%\%source_repo_name%"
 
     :: Change to the source repository directory
-    cd "%source_repo_name%"
+    cd "%repo_dir%\%source_repo_name%"
 )
 
-:: Create a new repository on the destination remote using GitHub API
-echo.
-echo Creating new repository: %destination_repo_name%
-curl -X POST -H "Authorization: token %github_token%" -d "{\"name\":\"%destination_repo_name%\"}" "https://api.github.com/user/repos"
+:: Check if the destination repository is a local path or a GitHub URL
+echo %destination_repo% | findstr /C:"https://github.com/" >nul
+if %errorlevel%==0 (
+    :: Destination repository is on GitHub
+    :: Create a new repository on the destination remote using GitHub API
+    echo.
+    echo Creating new repository: %destination_repo_name%
+    curl -X POST -H "Authorization: token %github_token%" -d "{\"name\":\"%destination_repo_name%\"}" "https://api.github.com/user/repos"
 
-:: Push the repository to the destination remote
-echo.
-echo Pushing repository to destination...
-git remote add destination "%destination_repo%"
-git push --all destination
+    :: Push the repository to the destination remote
+    echo.
+    echo Pushing repository to destination remote %destination_repo%
+    git remote add github "%%"
+    git push --all github
+) else (
+    :: Destination repository is a local path
+    :: Create the destination repository directory
+    echo Creating destination repository at: %destination_repo%
+    mkdir "%destination_repo%"
+
+    :: Initialize the destination repository as a Git repository
+    cd "%destination_repo%"
+    git init
+    echo Created empty Git repository.
+	
+	:: Change to the source repository directory
+    cd "%repo_dir%\%source_repo_name%"
+	
+	:: Push the source repository to the destination repository
+	echo.
+	echo Pushing repository to destination remote %destination_repo%
+	git remote add folder "%destination_repo:\=/%"
+	git push --all folder
+
+)
 
 :: Update the submodules
 echo.
