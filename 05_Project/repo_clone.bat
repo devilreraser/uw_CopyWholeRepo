@@ -3,12 +3,12 @@ setlocal
 
 :: Example usage:
 ::
-:: clone_repo.bat https://github.com/example/source-repo.git https://github.com/example/destination-repo.git <github_personal_access_token>
+:: repo_clone.bat https://github.com/example/source-repo.git https://github.com/example/destination-repo.git <github_personal_access_token>
 ::
 :: Replace <github_personal_access_token> with your actual GitHub personal access token ex: ghp_OTAbETGQXAXUJy5Jgb958wrcRfbwtq2Ltv9w.
 :: If the token is not provided as a command-line argument, you will be prompted to enter it interactively.
 :: ex.:
-:: clone_repo.bat https://github.com/devilreraser/uw_repository_utils.git https://github.com/devilreraser/uw_repository_utils_cloned.git ghp_OTAbETGQXAXUJy5Jgb958wrcRfbwtq2Ltv9w
+:: repo_clone.bat https://github.com/devilreraser/uw_repository_utils.git https://github.com/devilreraser/uw_repository_utils_cloned.git ghp_OTAbETGQXAXUJy5Jgb958wrcRfbwtq2Ltv9w
 
 
 
